@@ -8,10 +8,18 @@ const Ingredients = () => {
   const [userIngredients, setUserIngredients] = useState([]);
 
   const addIngredientHandler = ingredient => {
-    setUserIngredients(prevIngredients => [
-      ...prevIngredients,
-      { id: Math.random().toString(), ...ingredient }
-    ]);
+    fetch('https://burger-builder-59593-default-rtdb.firebaseio.com/ingredients.json', {
+      method: 'POST',
+      body: JSON.stringify(ingredient),
+      headers: { 'Content-Type': 'application/json' }
+    }).then(response => {
+      return response.json()
+    }).then( responseData => {
+      setUserIngredients(prevIngredients => [
+        ...prevIngredients,
+        { id: responseData.name, ...ingredient }
+      ]);
+    });
   };
 
   return (
