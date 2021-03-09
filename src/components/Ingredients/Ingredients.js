@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
@@ -21,6 +21,22 @@ const Ingredients = () => {
       ]);
     });
   };
+
+  useEffect(() => {
+    fetch('https://burger-builder-59593-default-rtdb.firebaseio.com/ingredients.json')
+      .then(response => response.json())
+      .then(responseData => {
+        const loadedIngredients = [];
+        for (const key in responseData) {
+          loadedIngredients.push({
+            id: key,
+            title: responseData[key].title,
+            amount: responseData[key].amount
+          });
+        }
+        setUserIngredients(loadedIngredients);
+      })
+  }, [])
 
   return (
     <div className="App">
