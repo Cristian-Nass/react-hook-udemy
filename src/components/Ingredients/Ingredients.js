@@ -8,9 +8,14 @@ const Ingredients = () => {
   const [userIngredients, setUserIngredients] = useState([]);
 
   const removeIngredientHandler = ingredientId => {
-    setUserIngredients(prevIngredients =>
+    fetch(`https://burger-builder-59593-default-rtdb.firebaseio.com/ingredients/${ingredientId}.json`, {
+      method: 'DELETE'
+    })
+    .then(() => {
+      setUserIngredients(prevIngredients =>
       prevIngredients.filter(ingredient => ingredient.id !== ingredientId)
-    );
+      );
+    })
   };
 
   const filteredIngredientsHandler = useCallback(filteredIngredients => {
