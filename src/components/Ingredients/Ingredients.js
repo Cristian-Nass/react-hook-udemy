@@ -7,6 +7,12 @@ import Search from './Search';
 const Ingredients = () => {
   const [userIngredients, setUserIngredients] = useState([]);
 
+  const removeIngredientHandler = ingredientId => {
+    setUserIngredients(prevIngredients =>
+      prevIngredients.filter(ingredient => ingredient.id !== ingredientId)
+    );
+  };
+
   const filteredIngredientsHandler = useCallback(filteredIngredients => {
     setUserIngredients(filteredIngredients);
   }, [])
@@ -32,7 +38,7 @@ const Ingredients = () => {
 
       <section>
         <Search onLoadIngredients={filteredIngredientsHandler} />
-        <IngredientList ingredients={userIngredients} onRemoveItem={() => {}} />
+        <IngredientList ingredients={userIngredients} onRemoveItem={removeIngredientHandler} />
       </section>
     </div>
   );
