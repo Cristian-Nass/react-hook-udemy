@@ -1,4 +1,4 @@
-import React, { useReducer, useCallback } from 'react';
+import React, {useReducer, useCallback, useMemo} from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
@@ -45,7 +45,7 @@ const Ingredients = () => {
   const [userIngredients, dispatch] = useReducer(ingredientReducer, [])
   const [httpState, dispatchHttp] = useReducer(httpReducer, {loading: false, error: null})
 
-  const removeIngredientHandler = ingredientId => {
+  const removeIngredientHandler = useCallback(ingredientId => {
     dispatchHttp({type: 'SEND'});
     fetch(`https://burger-builder-59593-default-rtdb.firebaseio.com/ingredients/${ingredientId}.json`, {
       method: 'DELETE'
@@ -56,13 +56,13 @@ const Ingredients = () => {
     }).catch(error => {
       dispatchHttp({type: 'ERROR', errorMessage: error.message})
     })
-  };
+  }, []);
 
   const filteredIngredientsHandler = useCallback(filteredIngredients => {
     dispatch({type: 'SET', ingredients: filteredIngredients});
   }, [])
 
-  const addIngredientHandler = ingredient => {
+  const addIngredientHandler = useCallback(ingredient => {
     dispatchHttp({type: 'SEND'});
     fetch('https://burger-builder-59593-default-rtdb.firebaseio.com/ingredients.json', {
       method: 'POST',
@@ -74,11 +74,15 @@ const Ingredients = () => {
     }).then( responseData => {
       dispatch({type: 'ADD', ingredients: { id: responseData.name, ...ingredient }});
     });
-  };
+  }, []);
 
-  const clearError = () => {
+  const clearError = useCallback(() => {
     dispatchHttp({type: 'CLEAR'});
-  };
+  }, []);
+
+  const ingredientList = useMemo(() => {
+    return <IngredientList ingredients={userIngredients} onRemoveItem={removeIngredientHandler} />
+  }, [userIngredients, removeIngredientHandler]);
 
   return (
     <div className="App">
@@ -87,7 +91,7 @@ const Ingredients = () => {
 
       <section>
         <Search onLoadIngredients={filteredIngredientsHandler} />
-        <IngredientList ingredients={userIngredients} onRemoveItem={removeIngredientHandler} />
+        {ingredientList}
       </section>
     </div>
   );
